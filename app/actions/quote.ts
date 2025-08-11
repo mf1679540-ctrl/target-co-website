@@ -1,14 +1,14 @@
-"use server"
+import nodemailer from "nodemailer";
+
+"use server";
 
 export async function submitQuoteRequest(formData: FormData) {
   // Extract form data
   const quoteData = {
-    // Company Information
     companyName: formData.get("companyName") as string,
     registrationNumber: formData.get("registrationNumber") as string,
     industryType: formData.get("industryType") as string,
 
-    // Contact Person Details
     firstName: formData.get("firstName") as string,
     lastName: formData.get("lastName") as string,
     jobTitle: formData.get("jobTitle") as string,
@@ -18,7 +18,6 @@ export async function submitQuoteRequest(formData: FormData) {
     alternativePhone: formData.get("alternativePhone") as string,
     preferredContact: formData.get("preferredContact") as string,
 
-    // Equipment Requirements
     equipmentTypes: formData.getAll("equipmentType") as string[],
     batchSize: formData.get("batchSize") as string,
     productionCapacity: formData.get("productionCapacity") as string,
@@ -26,18 +25,15 @@ export async function submitQuoteRequest(formData: FormData) {
     budgetRange: formData.get("budgetRange") as string,
     timeline: formData.get("timeline") as string,
 
-    // Additional Services
     additionalServices: formData.getAll("additionalService") as string[],
     additionalNotes: formData.get("additionalNotes") as string,
 
-    // Consent
     termsAccepted: formData.get("terms") === "on",
     marketingConsent: formData.get("updates") === "on",
 
-    // Metadata
     submittedAt: new Date().toISOString(),
     userAgent: (formData.get("userAgent") as string) || "Unknown",
-  }
+  };
 
   // Create email content
   const emailContent = `
@@ -80,44 +76,46 @@ CONSENT:
 SUBMISSION DETAILS:
 - Submitted At: ${quoteData.submittedAt}
 - User Agent: ${quoteData.userAgent}
-  `.trim()
+  `.trim();
 
   try {
-    // Here you would integrate with your email service
-    // For now, we'll simulate the email sending
-    console.log("Quote request received:", emailContent)
+    // إعداد nodemailer مع SMTP Zoho
+    const transporter = nodemailer.createTransport({
+      host: "smtp.zoho.com",
+      port: 465,
+      secure: true,
+      auth: {
+        user: "targetco.site@targetco.info",
+        pass: "Mhaf2005*#",
+      },
+    });
 
-    // In a real implementation, you would use a service like:
-    // - Nodemailer with SMTP
-    // - SendGrid
-    // - AWS SES
-    // - Resend
-    // - etc.
-
-    // Example with a hypothetical email service:
-    /*
-    await emailService.send({
-      to: 'quotes@targetco.com', // Your email address
-      subject: `New Quote Request from ${quoteData.companyName}`,
+    // إعدادات الإيميل
+    const mailOptions = {
+      from: "targetco.site@targetco.info",
+      to: "mf1679540@gmail.com","mohamedbanna911@icloud.com","magic.retouch@gmail.com"
+      subject: `New Quote Request from ${quoteData.companyName || "Unknown Company"}`,
       text: emailContent,
-      html: emailContent.replace(/\n/g, '<br>')
-    })
-    */
+    };
 
-    // Simulate processing time
-    await new Promise((resolve) => setTimeout(resolve, 1000))
+    // إرسال الإيميل
+    await transporter.sendMail(mailOptions);
+    console.log("Quote request email sent successfully");
+
+    // توليد رقم عرض السعر
+    const quoteId = `QR-${Date.now()}`;
 
     return {
       success: true,
       message: "Quote request submitted successfully! We will contact you within 24-48 hours.",
-      quoteId: `QR-${Date.now()}`,
-    }
+      quoteId,
+    };
   } catch (error) {
-    console.error("Error submitting quote request:", error)
+    console.error("Error submitting quote request:", error);
     return {
       success: false,
       message: "There was an error submitting your quote request. Please try again or contact us directly.",
       error: error instanceof Error ? error.message : "Unknown error",
-    }
+    };
   }
 }
