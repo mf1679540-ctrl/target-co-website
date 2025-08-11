@@ -3,7 +3,7 @@ import nodemailer from "nodemailer";
 "use server";
 
 export async function submitQuoteRequest(formData: FormData) {
-  // Extract form data
+  // استخراج بيانات الفورم
   const quoteData = {
     companyName: formData.get("companyName") as string,
     registrationNumber: formData.get("registrationNumber") as string,
@@ -35,7 +35,7 @@ export async function submitQuoteRequest(formData: FormData) {
     userAgent: (formData.get("userAgent") as string) || "Unknown",
   };
 
-  // Create email content
+  // محتوى الإيميل
   const emailContent = `
 New Quote Request - Target Co.
 
@@ -76,7 +76,7 @@ CONSENT:
 SUBMISSION DETAILS:
 - Submitted At: ${quoteData.submittedAt}
 - User Agent: ${quoteData.userAgent}
-  `.trim();
+`.trim();
 
   try {
     // إعداد nodemailer مع SMTP Zoho
@@ -90,10 +90,10 @@ SUBMISSION DETAILS:
       },
     });
 
-    // إعدادات الإيميل
+    // إعداد الإيميل
     const mailOptions = {
       from: "targetco.site@targetco.info",
-      to: "mf1679540@gmail.com","mohamedbanna911@icloud.com","magic.retouch@gmail.com"
+      to: ["mf1679540@gmail.com", "mohamedbanna911@icloud.com", "magic.retouch@gmail.com"].join(","),
       subject: `New Quote Request from ${quoteData.companyName || "Unknown Company"}`,
       text: emailContent,
     };
