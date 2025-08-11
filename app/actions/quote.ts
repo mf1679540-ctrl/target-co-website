@@ -1,6 +1,5 @@
-import nodemailer from "nodemailer";
-
 "use server";
+import nodemailer from "nodemailer";
 
 export async function submitQuoteRequest(formData: FormData) {
   // استخراج بيانات الفورم
