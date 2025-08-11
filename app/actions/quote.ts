@@ -1,4 +1,5 @@
 "use server";
+
 import nodemailer from "nodemailer";
 
 export async function submitQuoteRequest(formData: FormData) {
@@ -34,7 +35,7 @@ export async function submitQuoteRequest(formData: FormData) {
     userAgent: (formData.get("userAgent") as string) || "Unknown",
   };
 
-  // محتوى الإيميل
+  // تكوين نص الإيميل
   const emailContent = `
 New Quote Request - Target Co.
 
@@ -84,15 +85,19 @@ SUBMISSION DETAILS:
       port: 465,
       secure: true,
       auth: {
-        user: "targetco.site@targetco.info",
-        pass: "Mhaf2005*#",
+        user: "targetco.site@targetco.info", // ايميل الارسال (Sender)
+        pass: "Mhaf2005*#", // كلمة السر للإيميل ده
       },
     });
 
-    // إعداد الإيميل
+    // إعداد بيانات الإيميل
     const mailOptions = {
-      from: "targetco.site@targetco.info",
-      to: ["mf1679540@gmail.com", "mohamedbanna911@icloud.com", "magic.retouch@gmail.com"].join(","),
+      from: `"Target Co." <targetco.site@targetco.info>`, // اسم المرسل + الإيميل
+      to: [
+        "mf1679540@gmail.com",
+        "mohamedbanna911@icloud.com",
+        "magic.retouch@gmail.com",
+      ].join(","), // ايميلات تستقبل الطلبات
       subject: `New Quote Request from ${quoteData.companyName || "Unknown Company"}`,
       text: emailContent,
     };
@@ -101,7 +106,6 @@ SUBMISSION DETAILS:
     await transporter.sendMail(mailOptions);
     console.log("Quote request email sent successfully");
 
-    // توليد رقم عرض السعر
     const quoteId = `QR-${Date.now()}`;
 
     return {
