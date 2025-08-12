@@ -1,42 +1,48 @@
 "use server";
-
 import nodemailer from "nodemailer";
 
-export async function submitQuoteRequest(formData: FormData) {
-  // استخراج بيانات الفورم
-  const quoteData = {
-    companyName: formData.get("companyName") as string,
-    registrationNumber: formData.get("registrationNumber") as string,
-    industryType: formData.get("industryType") as string,
+export async function submitQuoteRequest(prevState: any, formData: FormData) {
+  try {
+    // استخراج بيانات الفورم
+    const quoteData = {
+      // Company Information
+      companyName: formData.get("companyName") as string,
+      registrationNumber: formData.get("registrationNumber") as string,
+      industryType: formData.get("industryType") as string,
 
-    firstName: formData.get("firstName") as string,
-    lastName: formData.get("lastName") as string,
-    jobTitle: formData.get("jobTitle") as string,
-    department: formData.get("department") as string,
-    email: formData.get("email") as string,
-    phone: formData.get("phone") as string,
-    alternativePhone: formData.get("alternativePhone") as string,
-    preferredContact: formData.get("preferredContact") as string,
+      // Contact Person Details
+      firstName: formData.get("firstName") as string,
+      lastName: formData.get("lastName") as string,
+      jobTitle: formData.get("jobTitle") as string,
+      department: formData.get("department") as string,
+      email: formData.get("email") as string,
+      phone: formData.get("phone") as string,
+      alternativePhone: formData.get("alternativePhone") as string,
+      preferredContact: formData.get("preferredContact") as string,
 
-    equipmentTypes: formData.getAll("equipmentType") as string[],
-    batchSize: formData.get("batchSize") as string,
-    productionCapacity: formData.get("productionCapacity") as string,
-    detailedRequirements: formData.get("detailedRequirements") as string,
-    budgetRange: formData.get("budgetRange") as string,
-    timeline: formData.get("timeline") as string,
+      // Equipment Requirements
+      equipmentTypes: formData.getAll("equipmentType") as string[],
+      batchSize: formData.get("batchSize") as string,
+      productionCapacity: formData.get("productionCapacity") as string,
+      detailedRequirements: formData.get("detailedRequirements") as string,
+      budgetRange: formData.get("budgetRange") as string,
+      timeline: formData.get("timeline") as string,
 
-    additionalServices: formData.getAll("additionalService") as string[],
-    additionalNotes: formData.get("additionalNotes") as string,
+      // Additional Services
+      additionalServices: formData.getAll("additionalService") as string[],
+      additionalNotes: formData.get("additionalNotes") as string,
 
-    termsAccepted: formData.get("terms") === "on",
-    marketingConsent: formData.get("updates") === "on",
+      // Consent
+      termsAccepted: formData.get("terms") === "on",
+      marketingConsent: formData.get("updates") === "on",
 
-    submittedAt: new Date().toISOString(),
-    userAgent: (formData.get("userAgent") as string) || "Unknown",
-  };
+      // Metadata
+      submittedAt: new Date().toISOString(),
+      userAgent: (formData.get("userAgent") as string) || "Unknown",
+    };
 
-  // تكوين نص الإيميل
-  const emailContent = `
+    // تحضير نص الإيميل
+    const emailContent = `
 New Quote Request - Target Co.
 
 COMPANY INFORMATION:
@@ -76,42 +82,31 @@ CONSENT:
 SUBMISSION DETAILS:
 - Submitted At: ${quoteData.submittedAt}
 - User Agent: ${quoteData.userAgent}
-`.trim();
+    `;
 
-  try {
-    // إعداد nodemailer مع SMTP Zoho
+    // إعداد SMTP مع Zoho Mail
     const transporter = nodemailer.createTransport({
       host: "smtp.zoho.com",
       port: 465,
       secure: true,
       auth: {
-        user: "targetco.site@targetco.info", // ايميل الارسال (Sender)
-        pass: "Mhaf2005*#", // كلمة السر للإيميل ده
+        user: "targetco.site@targetco.info",
+        pass: "Mhaf2005*#",
       },
     });
 
-    // إعداد بيانات الإيميل
-    const mailOptions = {
-      from: `"Target Co." <targetco.site@targetco.info>`, // اسم المرسل + الإيميل
-      to: [
-        "mf1679540@gmail.com",
-        "mohamedbanna911@icloud.com",
-        "magic.retouch@gmail.com",
-      ].join(","), // ايميلات تستقبل الطلبات
-      subject: `New Quote Request from ${quoteData.companyName || "Unknown Company"}`,
-      text: emailContent,
-    };
-
     // إرسال الإيميل
-    await transporter.sendMail(mailOptions);
-    console.log("Quote request email sent successfully");
-
-    const quoteId = `QR-${Date.now()}`;
+    await transporter.sendMail({
+      from: '"Target Co." <targetco.site@targetco.info>',
+      to: "mf1679540@gmail.com",
+      subject: `New Quote Request from ${quoteData.companyName}`,
+      text: emailContent,
+    });
 
     return {
       success: true,
       message: "Quote request submitted successfully! We will contact you within 24-48 hours.",
-      quoteId,
+      quoteId: `QR-${Date.now()}`,
     };
   } catch (error) {
     console.error("Error submitting quote request:", error);
