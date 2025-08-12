@@ -1,49 +1,17 @@
-"use client";
+"use client"
 
-import React, { JSX } from "react";
-import Link from "next/link";
-import { useActionState } from "react";
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
+import { Badge } from "@/components/ui/badge"
+import { Calculator, Building, Users, FileText, Send, ArrowLeft, CheckCircle, AlertCircle } from "lucide-react"
+import Link from "next/link"
+import { submitQuoteRequest } from "../actions/quote"
+import { useActionState } from "react"
 
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
-
-import {
-  Calculator,
-  Building,
-  Users,
-  FileText,
-  Send,
-  ArrowLeft,
-  CheckCircle,
-  AlertCircle,
-} from "lucide-react";
-
-import { submitQuoteRequest } from "../actions/quote";
-
-/**
- * Local type for the action response. Matches the server action return shape.
- */
-type QuoteResponse = {
-  success: boolean;
-  message: string;
-  quoteId?: string;
-  error?: string;
-} | null;
-
-/**
- * Type-cast helper to satisfy useActionState typings.
- * submitQuoteRequest signature (prevState, formData) is expected by Next's server actions.
- */
-const submitQuoteRequestTyped = submitQuoteRequest as unknown as (
-  prevState: QuoteResponse,
-  formData: FormData
-) => Promise<NonNullable<QuoteResponse>>;
-
-export default function QuotePage(): JSX.Element {
-  const [state, formAction, isPending] = useActionState(submitQuoteRequestTyped, null);
+export default function QuotePage() {
+  const [state, formAction, isPending] = useActionState(submitQuoteRequest, null)
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -112,10 +80,8 @@ export default function QuotePage(): JSX.Element {
                 your requirements and respond within 24-48 hours.
               </p>
             </CardHeader>
-
             <CardContent>
-              {/* form action hooked to server action via formAction from useActionState */}
-              <form action={formAction} className="space-y-8" method="post">
+              <form action={formAction} className="space-y-8">
                 {/* Hidden field for user agent */}
                 <input
                   type="hidden"
@@ -133,7 +99,7 @@ export default function QuotePage(): JSX.Element {
                   <div className="grid md:grid-cols-2 gap-4">
                     <div>
                       <label className="text-sm font-medium text-gray-700 mb-2 block">Company Name</label>
-                      <Input name="companyName" placeholder="ABC Pharmaceuticals Ltd." required />
+                      <Input name="companyName" placeholder="ABC Pharmaceuticals Ltd." />
                     </div>
                     <div>
                       <label className="text-sm font-medium text-gray-700 mb-2 block">
@@ -428,7 +394,9 @@ export default function QuotePage(): JSX.Element {
         <div className="container mx-auto px-4 lg:px-6">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">What Happens Next?</h2>
-            <p className="text-xl text-gray-600">Our streamlined quote process ensures you get the information you need quickly</p>
+            <p className="text-xl text-gray-600">
+              Our streamlined quote process ensures you get the information you need quickly
+            </p>
           </div>
 
           <div className="grid md:grid-cols-4 gap-8">
@@ -467,5 +435,5 @@ export default function QuotePage(): JSX.Element {
         </div>
       </section>
     </div>
-  );
+  )
 }
