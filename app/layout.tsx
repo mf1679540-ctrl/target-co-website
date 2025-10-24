@@ -4,7 +4,8 @@ import { Inter } from "next/font/google"
 import "./globals.css"
 import Header from "@/components/header"
 import { Footer } from "@/components/footer"
-import { Analytics } from "@vercel/analytics/react" // ✅ أضف السطر ده
+import { Analytics } from "@vercel/analytics/react" 
+import { SpeedInsights } from "@vercel/speed-insights/next" // ✅ أضف السطر ده
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -34,7 +35,8 @@ export default function RootLayout({
         <Header />
         <main className="flex-1">{children}</main>
         <Footer />
-        <Analytics /> {/* ✅ أضف السطر ده تحت الفوتر */}
+        <Analytics /> {/* ✅ تتبع الزوار */}
+        <SpeedInsights /> {/* ✅ تتبع سرعة الموقع */}
       </body>
     </html>
   )
